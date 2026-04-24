@@ -1,6 +1,6 @@
 package com.abdo.ecommerce.order;
 
-public enum PayementMethod {
+public enum PaymentMethod {
 
     PAYPAL,
     CREDIT_CREDIT,
