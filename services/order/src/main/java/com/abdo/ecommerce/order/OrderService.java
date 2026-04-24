@@ -3,6 +3,8 @@ package com.abdo.ecommerce.order;
 
 import com.abdo.ecommerce.customer.CustomerClient;
 import com.abdo.ecommerce.exception.BusinessException;
+import com.abdo.ecommerce.kafka.OrderConfirmation;
+import com.abdo.ecommerce.kafka.OrderProducer;
 import com.abdo.ecommerce.orderLine.OrderLineRequest;
 import com.abdo.ecommerce.orderLine.OrderLineService;
 import com.abdo.ecommerce.product.ProductClient;
@@ -20,6 +22,7 @@ public class OrderService {
     private final ProductClient productClient;
     private final OrderMapper mapper;
     private final OrderLineService orderLineService;
+    private final OrderProducer orderProducer;
     public Integer createdOrder(OrderRequest request) {
         // chekck the customer --> OpenFeign
         var customer = this.customerClient.findCustomerById(request.customerId())
@@ -27,7 +30,7 @@ public class OrderService {
 
 
         // purchase the products --> product - microservice (ms) (RestTemplate)
-        this.productClient.purchaseProducts(request.products());
+        var purchaseProducts = this.productClient.purchaseProducts(request.products());
 
         // persist order
         var order = this.repository.save(mapper.toOrder(request));
@@ -44,9 +47,20 @@ public class OrderService {
             );
         }
 
-        // start payment process
+        // todo start payment process
 
         // send the order confirmation --> notification-ms (kafka)
-        return null;
+        orderProducer.sendOrderConfirmation(
+                new OrderConfirmation(
+                        request.reference(),
+                        request.amount(),
+                        request.paymentMethod(),
+                        customer,
+                        purchaseProducts
+                )
+        );
+
+
+        return order.getId();
     }
 }
