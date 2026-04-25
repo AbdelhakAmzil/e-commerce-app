@@ -1,13 +1,15 @@
 package com.abdo.ecommerce.payment;
 
+import com.abdo.ecommerce.customer.CustomerResponse;
+import com.abdo.ecommerce.order.PaymentMethod;
+
 import java.math.BigDecimal;
 
 public record PaymentRequest(
-        Integer id,
         BigDecimal amount,
         PaymentMethod paymentMethod,
         Integer orderId,
         String orderReference,
-        Customer customer
+        CustomerResponse customer
 ) {
 }
