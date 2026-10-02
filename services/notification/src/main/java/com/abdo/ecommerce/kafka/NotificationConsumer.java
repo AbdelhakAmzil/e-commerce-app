@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 
 import static com.abdo.ecommerce.notification.NotificationType.ORDER_CONFIRMATION;
+import static com.abdo.ecommerce.notification.NotificationType.PAYMENT_CONFIRMATION;
 import static java.lang.String.format;
 
 @Service
@@ -30,7 +31,7 @@ public class NotificationConsumer {
         log.info(format("Consuming the message from order-topic Topic:: %s", paymentConfirmation));
         repository.save(
                 Notification.builder()
-                        .type(ORDER_CONFIRMATION)
+                        .type(PAYMENT_CONFIRMATION)
                         .notificationDate(LocalDateTime.now())
                         .paymentConfirmation(paymentConfirmation)
                         .build()
